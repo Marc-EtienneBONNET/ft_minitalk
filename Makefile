@@ -6,12 +6,14 @@
 #    By: mbonnet <mbonnet@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/05/04 15:14:49 by mbonnet           #+#    #+#              #
-#    Updated: 2021/10/14 08:18:18 by mbonnet          ###   ########.fr        #
+#    Updated: 2021/10/14 11:51:21 by mbonnet          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME			=	server
-NAME2			=	client
+LIBFT		=	libft
+SRV			=	server
+CLI			=	client
+NAME		=	minitalk
 
 SRCS			=	serveur_main.c\
 
@@ -29,21 +31,23 @@ CFLAGS			=	-Wall -Werror -Wextra -g
 
 LIBFT_DIR		=	libft
 
-LDFLAGS			=	-L ${LIBFT_DIR} -lft
+LDFLAGS			= -L ${LIBFT_DIR} -lft
 
 .c.o			:
 					${CC} ${CFLAGS} ${HEAD} -c $< -o ${<:.c=.o}
 
-$(NAME)			:	${OBJS}
+$(SRV)			:	${OBJS} ${CLI}
 					make -C ${LIBFT_DIR}
-					${CC} ${CFLAGS} ${OBJS} ${LDFLAGS} -o ${NAME}
+					${CC} ${CFLAGS} ${OBJS} ${LDFLAGS} -o ${SRV}
 
-$(NAME2)			:	${OBJS2}
+$(CLI)			:	${OBJS2}
 					make -C ${LIBFT_DIR}
-					${CC} ${CFLAGS} ${OBJS2} ${LDFLAGS} -o ${NAME2}
+					${CC} ${CFLAGS} ${OBJS2} ${LDFLAGS} -o ${CLI}
+
+${NAME}			: ${SRV} ${CLI}
 
 
-all				:	${NAME} ${NAME2}
+all				:	${NAME}
 
 clean			:
 					make clean -C ${LIBFT_DIR}
@@ -51,7 +55,7 @@ clean			:
 
 fclean			:	clean
 					make fclean -C ${LIBFT_DIR}
-					rm -rf ${NAME}
+					rm -rf ${SRV} ${CLI}
 
 re				:	fclean all
 

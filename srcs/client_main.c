@@ -1,6 +1,6 @@
-# include <signal.h>
-# include <unistd.h>
-# include "../libft/includes/libft.h"
+#include <signal.h>
+#include <unistd.h>
+#include "libft.h"
 
 void	ft_envoi_sigusr(int pid, char c)
 {
@@ -46,7 +46,7 @@ int	ft_verif_pid(char *pid)
 int	main(int ac, char **av)
 {
 	int	pid;
-	
+
 	pid = 0;
 	if (ac != 3 || av[2] == NULL || av[1] == NULL)
 		return (-1);

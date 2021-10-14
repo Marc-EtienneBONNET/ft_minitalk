@@ -6,39 +6,65 @@
 /*   By: mbonnet <mbonnet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/13 19:58:59 by mbonnet           #+#    #+#             */
-/*   Updated: 2021/10/14 10:39:02 by mbonnet          ###   ########.fr       */
+/*   Updated: 2021/10/14 16:24:11 by mbonnet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-# include <signal.h>
-# include <unistd.h>
-# include "../libft/includes/libft.h"
+#include <signal.h>
+#include <unistd.h>
+#include "libft.h"
 
-void	ft_traduction(int signo)
+char	*ft_strjoin_4(char *s1, char s2)
 {
-	static char	buf[100];
-	static int	i;
-	static int	bit;
+	char			*res;
+	unsigned int	len;
+	unsigned int	x;
+	unsigned int	i;
 
-	if (bit == 8)
-		bit = 0;
-	if (signo == SIGUSR2)
-		buf[i] |= (1 << bit);
+	i = 0;
+	x = 0;
+	if (!s1)
+		len = 2;
 	else
-		buf[i] &= ~(1 << bit);
+		len = ft_strlen((char *)s1 + 1);
+	res = (char *)malloc(sizeof(char) * (len + 1));
+	if (!(res))
+		return (NULL);
+	while (s1 && s1[x])
+	{
+		res[x] = s1[x];
+		x++;
+	}
+	res[x + i] = s2;
+	i++;
+	res[x + i] = '\0';
+	if (!s1)
+		free(s1);
+	return (res);
+}
+
+void	ft_print_msg(int signo)
+{
+	static int	bit = 0;
+	static char	tmp = 0;
+
+	tmp |= (signo << bit);
 	if (++bit == 8)
 	{
-		if (i == 98)
-		{
-			buf[++i] = '\0';
-			ft_printf("%s", buf);
-			i = 0;
-		}
-		else if (buf[i] == '\0')
-			ft_printf("%s\n", buf);
+		if (tmp == '\0')
+			write(1, "\n", 2);
 		else
-			i++;
+			write(1, &tmp, 1);
+		bit = 0;
+		tmp = 0;
 	}
+}
+//0123456789
+//0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+//0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+void	ft_handler(int signo)
+{
+	ft_print_msg(signo == SIGUSR2);
 }
 
 int	main(int ac, char **av)
@@ -52,10 +78,9 @@ int	main(int ac, char **av)
 	{
 		pid = getpid();
 		ft_printf("%d\n", pid);
+		signaction(SIGUSR1, ft_handler);
+		signaction(SIGUSR2, ft_handler);
 		while (1)
-		{
-			signal(SIGUSR1, ft_traduction);
-			signal(SIGUSR2, ft_traduction);
-		}
+			pause();
 	}
 }
