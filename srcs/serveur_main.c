@@ -6,7 +6,7 @@
 /*   By: mbonnet <mbonnet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/13 19:58:59 by mbonnet           #+#    #+#             */
-/*   Updated: 2021/10/14 16:24:11 by mbonnet          ###   ########.fr       */
+/*   Updated: 2021/10/14 18:17:48 by mbonnet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,72 +14,54 @@
 #include <unistd.h>
 #include "libft.h"
 
-char	*ft_strjoin_4(char *s1, char s2)
+void	ft_print_msg(int signo, siginfo_t *sig)
 {
-	char			*res;
-	unsigned int	len;
-	unsigned int	x;
-	unsigned int	i;
+	static int		bit = 0;
+	static char		tmp = 0;
+	static pid_t	client_pid = 0;
 
-	i = 0;
-	x = 0;
-	if (!s1)
-		len = 2;
-	else
-		len = ft_strlen((char *)s1 + 1);
-	res = (char *)malloc(sizeof(char) * (len + 1));
-	if (!(res))
-		return (NULL);
-	while (s1 && s1[x])
-	{
-		res[x] = s1[x];
-		x++;
-	}
-	res[x + i] = s2;
-	i++;
-	res[x + i] = '\0';
-	if (!s1)
-		free(s1);
-	return (res);
-}
-
-void	ft_print_msg(int signo)
-{
-	static int	bit = 0;
-	static char	tmp = 0;
-
+	if (client_pid == 0)
+		client_pid = sig->si_pid;
 	tmp |= (signo << bit);
 	if (++bit == 8)
 	{
 		if (tmp == '\0')
+		{
 			write(1, "\n", 2);
+			kill(client_pid, SIGUSR2);
+			client_pid = 0;
+		}
 		else
 			write(1, &tmp, 1);
 		bit = 0;
 		tmp = 0;
 	}
+	else
+		kill(client_pid, SIGUSR1);
 }
-//0123456789
-//0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
-//0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
-void	ft_handler(int signo)
+
+static void	ft_handler(int signo, siginfo_t *sig, void *non)
 {
-	ft_print_msg(signo == SIGUSR2);
+	(void)non;
+	ft_print_msg(signo == SIGUSR2, sig);
 }
 
 int	main(int ac, char **av)
 {
-	pid_t	pid;
+	pid_t				pid;
+	struct sigaction	act;
 
 	(void)av;
 	if (ac != 1)
 		return (-1);
 	else
 	{
+		act.sa_sigaction = ft_handler;
+		act.sa_flags = SA_SIGINFO;
 		pid = getpid();
 		ft_printf("%d\n", pid);
-		signaction(SIGUSR1, ft_handler);
-		signaction(SIGUSR2, ft_handler);
+		sigaction(SIGUSR1, &act, 0);
+		sigaction(SIGUSR2, &act, 0);
 		while (1)
 			pause();
 	}

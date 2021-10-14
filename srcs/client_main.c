@@ -16,7 +16,7 @@ void	ft_envoi_sigusr(int pid, char c)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(1000);
+		usleep(100);
 	}
 }
 
@@ -43,9 +43,18 @@ int	ft_verif_pid(char *pid)
 	return (1);
 }
 
+static void	ft_validation(int signo, siginfo_t *act, void *non)
+{
+	(void)act;
+	(void)non;
+	if (signo == SIGUSR2)
+		exit (0);
+}
+
 int	main(int ac, char **av)
 {
-	int	pid;
+	int					pid;
+	struct sigaction	act;
 
 	pid = 0;
 	if (ac != 3 || av[2] == NULL || av[1] == NULL)
@@ -53,6 +62,10 @@ int	main(int ac, char **av)
 	if (ft_verif_pid(av[1]) == -1)
 		return (-1);
 	pid = ft_atoi(av[1]);
+	act.sa_sigaction = ft_validation;
+	act.sa_flags = SA_SIGINFO;
+	sigaction(SIGUSR1, &act, 0);
+	sigaction(SIGUSR2, &act, 0);
 	ft_boucle_envoie_message(pid, av[2]);
 	return (0);
 }
