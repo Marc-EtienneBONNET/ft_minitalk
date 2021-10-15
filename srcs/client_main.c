@@ -11,12 +11,13 @@ void	ft_envoi_sigusr(int pid, char c)
 	i = 0;
 	while (i < 8)
 	{
+		printf("i : %d\n", i);
 		res = (c >> i++) & 1;
 		if (res == 0)
 			kill(pid, SIGUSR1);
 		else
 			kill(pid, SIGUSR2);
-		usleep(100);
+		pause();
 	}
 }
 
@@ -62,6 +63,7 @@ int	main(int ac, char **av)
 	if (ft_verif_pid(av[1]) == -1)
 		return (-1);
 	pid = ft_atoi(av[1]);
+	printf("pid client : %d\n",getpid());
 	act.sa_sigaction = ft_validation;
 	act.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &act, 0);
