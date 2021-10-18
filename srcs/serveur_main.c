@@ -6,7 +6,7 @@
 /*   By: mbonnet <mbonnet@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/13 19:58:59 by mbonnet           #+#    #+#             */
-/*   Updated: 2021/10/15 17:32:46 by mbonnet          ###   ########.fr       */
+/*   Updated: 2021/10/18 07:17:50 by mbonnet          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,16 +17,23 @@
 void	ft_print_msg(int signo, siginfo_t *sig)
 {
 	static int		bit = 0;
-	static char		tmp = 0;
+	static int		tmp = 0;
 
 	tmp |= (signo << bit);
-	usleep(2000);
-	if (++bit == 8)
+	usleep(1000);
+	if (tmp < 0 || tmp > 255)
+	{
+		tmp = 0;
+		bit = 0;
+		printf("\nLe caractère donner a était détourné,\nou ne fais pas partie de la table ascii étandu\n");
+		kill(sig->si_pid, SIGUSR2);
+	}
+	else if (++bit == 8)
 	{
 		if (tmp == '\0')
 		{
 			write(1, "\n", 2);
-			kill(sig->si_pid, SIGUSR2);
+			kill(sig->si_pid, SIGUSR1);
 		}
 		else
 		{
@@ -65,7 +72,10 @@ int	main(int ac, char **av)
 		sigaction(SIGUSR1, &act, 0);
 		sigaction(SIGUSR2, &act, 0);
 		while (1)
+		{
+			usleep(1000);
 			pause();
+		}
 	}
 }
 

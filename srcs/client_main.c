@@ -11,8 +11,8 @@ void	ft_envoi_sigusr(int pid, char c)
 	i = 0;
 	while (i < 8)
 	{
-		printf("i : %d\n", i);
 		res = (c >> i++) & 1;
+		//ft_affichage_binaire(res);
 		if (res == 0)
 			kill(pid, SIGUSR1);
 		else
@@ -29,6 +29,7 @@ void	ft_boucle_envoie_message(int pid, char *str)
 	while (str[++x])
 		ft_envoi_sigusr(pid, str[x]);
 	ft_envoi_sigusr(pid, '\0');
+	exit (0);
 }
 
 int	ft_verif_pid(char *pid)
@@ -48,6 +49,7 @@ static void	ft_validation(int signo, siginfo_t *act, void *non)
 {
 	(void)act;
 	(void)non;
+	(void)signo;
 	if (signo == SIGUSR2)
 		exit (0);
 }
@@ -63,7 +65,6 @@ int	main(int ac, char **av)
 	if (ft_verif_pid(av[1]) == -1)
 		return (-1);
 	pid = ft_atoi(av[1]);
-	printf("pid client : %d\n",getpid());
 	act.sa_sigaction = ft_validation;
 	act.sa_flags = SA_SIGINFO;
 	sigaction(SIGUSR1, &act, 0);
