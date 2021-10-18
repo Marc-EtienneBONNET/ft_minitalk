@@ -49,7 +49,6 @@ static void	ft_validation(int signo, siginfo_t *act, void *non)
 {
 	(void)act;
 	(void)non;
-	(void)signo;
 	if (signo == SIGUSR2)
 		exit (0);
 }
