@@ -12,7 +12,6 @@ void	ft_envoi_sigusr(int pid, char c)
 	while (i < 8)
 	{
 		res = (c >> i++) & 1;
-		//ft_affichage_binaire(res);
 		if (res == 0)
 			kill(pid, SIGUSR1);
 		else
@@ -26,6 +25,7 @@ void	ft_boucle_envoie_message(int pid, char *str)
 	int	x;
 
 	x = -1;
+	usleep(1000);
 	while (str[++x])
 		ft_envoi_sigusr(pid, str[x]);
 	ft_envoi_sigusr(pid, '\0');
