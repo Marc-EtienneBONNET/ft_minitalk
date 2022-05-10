@@ -1,0 +1,36 @@
+Minitalk 42
+
+I ) La description
+
+	Minitalk est un programme de communication sous la forme d'un client et d'un serveur. Le serveur doit être démarré en premier et doit après le lancement afficher son PID.
+II) Fonctionnement
+
+	Le client prend en paramètres :
+		le PID du serveur
+		une chaîne de caractères à transmettre
+	Le client communique au serveur la chaîne passée en paramètre. Une fois entièrement reçu, le serveur l'affiche.
+III) Consignes
+
+	la communication entre les processus se fait uniquement à l'aide de signaux UNIX (suivant POSIX).
+	
+	Le serveur est capable de recevoir des chaînes de plusieurs clients à la suite, sans redémarrage.
+	
+	une seule variable globale est autorisée
+
+	seule l'utilisation des deux signaux SIGUSR1 et SIGUSR2 est autorisée
+
+	seules les fonctions suivantes sont autorisées :
+
+		signal
+		kill
+		getpid
+		malloc
+		free
+		pause
+		sleep
+		usleep
+		exit
+IV) Mon bénéfice
+
+Ce projet m’a permis d’explorer le fonctionnement des signaux.
+Il m’a aussi permis d’obtenir une meilleure appréhension de la communication entre « serveurs » dans le sens large du terme.
